@@ -8,6 +8,7 @@ import com.ontimize.jee.server.dao.DefaultOntimizeDaoHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,9 @@ public class CandidateService implements ICandidateService {
     private CandidateDao candidateDao;
 
     @Autowired
+    private MasterService masterService;
+
+    @Autowired
     private DefaultOntimizeDaoHelper daoHelper;
 
     @Override
@@ -28,6 +32,7 @@ public class CandidateService implements ICandidateService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public EntityResult candidateInsert(Map<String, Object> attrMap) throws OntimizeJEERuntimeException {
         return this.daoHelper.insert(this.candidateDao,attrMap);
     }
