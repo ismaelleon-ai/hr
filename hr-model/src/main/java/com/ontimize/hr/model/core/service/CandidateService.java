@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,30 @@ public class CandidateService implements ICandidateService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public EntityResult candidateInsert(Map<String, Object> attrMap) throws OntimizeJEERuntimeException {
-        return this.daoHelper.insert(this.candidateDao,attrMap);
+        Map<String, Object> nonRelatedData = removeNonRelatedData (attrMap, CandidateDao.ATTR_EDUCATION,CandidateDao.ATTR_EXPERIENCE_LEVEL, CandidateDao.ATTR_ORIGIN, CandidateDao.ATTR_PROFILE, CandidateDao.ATTR_STATUS)
+        insertNonRelatedData(nonRelatedData);
+
+
+        EntityResult insertCandidate = this.daoHelper.insert(this.candidateDao,attrMap);
+
+
+        return insertCandidate;
+    }
+
+    private void insertNonRelatedData(Map<String, Object> nonCandidateData) {
+        for (Map.Entry<String, Object> entry : nonCandidateData.entrySet()){
+
+        }
+    }
+
+    private Map<String, Object> removeNonRelatedData(Map<String, Object> attrMap, String ... attrNonRelated) {
+        Map<String, Object> data = new HashMap<>();
+        for (String attr : attrNonRelated){
+            if (attrMap.containsKey(attr) && attrMap.get(attr) instanceof String) {
+                data.put(attr, attrMap.remove(attr));
+            }
+        }
+        return data;
     }
 
     @Override
